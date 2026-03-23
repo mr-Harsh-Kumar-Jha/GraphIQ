@@ -26,7 +26,10 @@ if not postgres_url:
     raise RuntimeError("POSTGRES_URL is not set")
 
 # If elsewhere you use asyncpg-style URLs, adapt here; otherwise this is fine
-sync_url = postgres_url.replace("postgresql://", "postgresql+psycopg2://")
+if postgres_url.startswith("postgres://"):
+    sync_url = postgres_url.replace("postgres://", "postgresql+psycopg2://", 1)
+else:
+    sync_url = postgres_url.replace("postgresql://", "postgresql+psycopg2://", 1)
 
 
 def run_migrations_offline() -> None:
