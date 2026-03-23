@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/query",
+      "destination": "https://specified-yolanda-streamlen-ecab5888.koyeb.app/query"
+    },
+    {
+      "source": "/health",
+      "destination": "https://specified-yolanda-streamlen-ecab5888.koyeb.app/health"
+    },
+    {
+      "source": "/graph/:path*",
+      "destination": "https://specified-yolanda-streamlen-ecab5888.koyeb.app/graph/:path*"
+    }
+  ]
+}
