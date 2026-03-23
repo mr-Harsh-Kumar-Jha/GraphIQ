@@ -6,10 +6,10 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/query': 'http://localhost:8006',
-      '/health': 'http://localhost:8006',
-      '/graph': 'http://localhost:8006',
-      '/audit': 'http://localhost:8006',
+      '/query': 'https://specified-yolanda-streamlen-ecab5888.koyeb.app',
+      '/health': 'https://specified-yolanda-streamlen-ecab5888.koyeb.app',
+      '/graph': 'https://specified-yolanda-streamlen-ecab5888.koyeb.app',
+      '/audit': 'https://specified-yolanda-streamlen-ecab5888.koyeb.app',
     }
   }
 })
