@@ -1,0 +1,32 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  background: #0a0f1e;
+  color: #f1f5f9;
+  overflow: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #0f172a; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+/* Smooth transitions for highlight changes */
+.graph-node circle {
+  transition: r 0.3s ease, opacity 0.3s ease, stroke 0.3s ease;
+}
+
+/* Input focus glow */
+input:focus {
+  box-shadow: 0 0 0 2px #6366f1;
+}
+
+/* Button hover */
+button:not(:disabled):hover {
+  filter: brightness(1.1);
+}
