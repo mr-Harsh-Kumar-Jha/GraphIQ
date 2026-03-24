@@ -14,12 +14,12 @@ from app.core.registry.schema_registry import SchemaRegistry
 
 FEW_SHOT_EXAMPLES: list[dict[str, str]] = [
     {
-        "question": "Show me sales order 12345",
-        "intent": '{"intent_type": "entity_lookup", "entity_type": "order", "identifier": "0000012345", "fields": null}',
+        "question": "Show me sales order 740552",
+        "intent": '{"intent_type": "entity_lookup", "entity_type": "order", "identifier": "0000740552", "fields": null}',
     },
     {
-        "question": "Find billing document 9800001234",
-        "intent": '{"intent_type": "entity_lookup", "entity_type": "billing", "identifier": "9800001234", "fields": null}',
+        "question": "Find billing document 90504248",
+        "intent": '{"intent_type": "entity_lookup", "entity_type": "billing", "identifier": "0090504248", "fields": null}',
     },
     {
         "question": "List all blocked customers",
@@ -30,6 +30,10 @@ FEW_SHOT_EXAMPLES: list[dict[str, str]] = [
         "intent": '{"intent_type": "entity_list", "entity_type": "order", "filters": [{"field": "order_date", "operator": "gte", "value": "2025-01-01"}], "sort_by": null, "limit": 50, "fields": null}',
     },
     {
+        "question": "Which invoices are still unpaid?",
+        "intent": '{"intent_type": "entity_list", "entity_type": "journal_entry", "filters": [{"field": "is_paid", "operator": "eq", "value": null}], "sort_by": null, "limit": 50, "fields": null}',
+    },
+    {
         "question": "Top 5 products by billing amount",
         "intent": '{"intent_type": "aggregation", "entity_type": "billing_item", "measure": "billing_amount", "agg_fn": "sum", "group_by": ["product_id"], "filters": [], "sort_by": {"field": "agg_value", "order": "desc"}, "limit": 5}',
     },
@@ -38,8 +42,8 @@ FEW_SHOT_EXAMPLES: list[dict[str, str]] = [
         "intent": '{"intent_type": "aggregation", "entity_type": "billing", "measure": "billing_total", "agg_fn": "sum", "group_by": ["billing_currency"], "filters": [{"field": "billing_date", "operator": "gte", "value": "2025-01-01"}], "sort_by": {"field": "agg_value", "order": "desc"}, "limit": 10}',
     },
     {
-        "question": "Trace order 12345 from order to payment",
-        "intent": '{"intent_type": "flow_trace", "start_entity": "SalesOrder", "start_id": "0000012345", "target_entity": "Payment", "max_depth": 4}',
+        "question": "Trace order 740552 from order to payment",
+        "intent": '{"intent_type": "flow_trace", "start_entity": "SalesOrder", "start_id": "0000740552", "target_entity": "Payment", "max_depth": 4}',
     },
     {
         "question": "Which orders have no deliveries?",

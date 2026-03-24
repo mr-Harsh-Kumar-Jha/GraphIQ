@@ -405,7 +405,7 @@ ENTITY_CATALOG: dict[str, EntityDef] = {
                 filterable=True,
                 sortable=False,
                 aggregatable=False,
-                aliases=["invoice_type", "billing_type"],
+                aliases=["invoice_type", "billing_type", "billing_status"],
             ),
             "billing_document_date": FieldDef(
                 "billing_document_date",
@@ -629,7 +629,7 @@ ENTITY_CATALOG: dict[str, EntityDef] = {
                 filterable=True,
                 sortable=True,
                 aggregatable=False,
-                aliases=["clearing_doc", "payment_clearing_doc"],
+                aliases=["clearing_doc", "payment_clearing_doc", "is_paid", "clearing_status"],
             ),
             "updated_at": FieldDef(
                 "updated_at",
