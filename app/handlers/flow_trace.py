@@ -25,21 +25,29 @@ class FlowTraceHandler(BaseHandler):
     def shape_result(self, raw_data: list[dict[str, Any]], intent: FlowTraceIntent) -> str:  # type: ignore[override]
         if not raw_data:
             return (
-                f"No flow path found from {intent.start_entity} '{intent.start_id}' "
-                f"to {intent.target_entity or 'any downstream entity'}."
+                f"No record found for {intent.start_entity} '{intent.start_id}' in the graph. "
+                "Ensure the document exists and Neo4j sync has been run."
             )
-        path_count = len(raw_data)
-        # Build a linearized description of the first path
+        
+        # We now always return at least the start node if it exists.
+        # Check the longest path found.
         first = raw_data[0]
         nodes = first.get("nodes", [])
-        labels_chain = " → ".join(
-            (n.get("labels", ["?"])[0] if isinstance(n, dict) else "?") for n in nodes
-        )
-        return (
-            f"Found {path_count} flow path(s) from {intent.start_entity} '{intent.start_id}'. "
-            f"Primary path: {labels_chain}. "
-            + (f"Showing {path_count} path(s). " if path_count > 1 else "")
-        )
+        labels = [n.get("labels", ["?"])[0] for n in nodes if isinstance(n, dict)]
+        labels_chain = " → ".join(labels)
+        
+        target_reached = False
+        if intent.target_entity:
+            # Check if any node in the path matches the target label
+            target_label = self.cypher_builder._safe_label(intent.target_entity)
+            target_reached = any(target_label in n.get("labels", []) for n in nodes)
+
+        summary = f"Found flow for {intent.start_entity} '{intent.start_id}': {labels_chain}."
+        
+        if intent.target_entity and not target_reached:
+            summary += f" Note: No path reaching '{intent.target_entity}' was found; showing the longest available chain."
+            
+        return summary
 
     async def handle(self, intent: FlowTraceIntent, context: Any) -> HandlerResult:  # type: ignore[override]
         result = await super().handle(intent, context)

@@ -29,27 +29,26 @@ class CypherBuilder:
     """
 
     def build_flow_trace(self, intent: FlowTraceIntent) -> tuple[str, dict[str, Any]]:
-        """Build a variable-length path traversal for FlowTraceIntent."""
+        """Build a variable-length path traversal for FlowTraceIntent.
+        
+        Uses a robust longest-path approach: matches all reachable nodes up to max_depth
+        and returns the most complete path(s).
+        """
         start_label = self._safe_label(intent.start_entity)
         params: dict[str, Any] = {
             "start_id": intent.start_id,
         }
         max_depth = intent.max_depth
 
-        if intent.target_entity:
-            end_label = self._safe_label(intent.target_entity)
-            cypher = (
-                f"MATCH path = (start:{start_label} {{id: $start_id}})"
-                f"-[*1..{max_depth}]->(end:{end_label})\n"
-                "RETURN nodes(path) AS nodes, relationships(path) AS rels"
-            )
-        else:
-            # Return all reachable nodes from start
-            cypher = (
-                f"MATCH path = (start:{start_label} {{id: $start_id}})"
-                f"-[*1..{max_depth}]->(end)\n"
-                "RETURN nodes(path) AS nodes, relationships(path) AS rels"
-            )
+        # Use a more robust query that finds as many nodes as possible
+        # even if it doesn't reach a specific end node.
+        cypher = (
+            f"MATCH (start:{start_label} {{id: $start_id}})\n"
+            f"MATCH path = (start)-[*0..{max_depth}]->(end)\n"
+            "RETURN nodes(path) AS nodes, relationships(path) AS rels\n"
+            "ORDER BY size(nodes) DESC\n"
+            "LIMIT 5"
+        )
 
         return cypher, params
 
@@ -96,16 +95,23 @@ class CypherBuilder:
         # Normalize common aliases to Neo4j labels
         _alias_to_label: dict[str, str] = {
             "order": "SalesOrder",
+            "orders": "SalesOrder",
             "salesorder": "SalesOrder",
             "delivery": "Delivery",
+            "deliveries": "Delivery",
             "invoice": "Invoice",
+            "invoices": "Invoice",
             "billing": "Invoice",
             "payment": "Payment",
+            "payments": "Payment",
             "customer": "Customer",
+            "customers": "Customer",
             "journal": "JournalEntry",
             "journalentry": "JournalEntry",
             "product": "Product",
+            "products": "Product",
             "plant": "Plant",
+            "plants": "Plant",
         }
         normalized = _alias_to_label.get(label.lower(), label)
         if normalized not in self._VALID_LABELS:

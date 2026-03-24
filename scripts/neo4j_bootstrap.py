@@ -98,15 +98,15 @@ MERGE (c)-[:PLACED]->(o)
 
 _REL_ORDER_DELIVERY = """
 UNWIND $rows AS row
-MATCH (o:SalesOrder {id: row.reference_sd_document})
-MATCH (d:Delivery {id: row.delivery_document})
+MERGE (o:SalesOrder {id: row.reference_sd_document})
+MERGE (d:Delivery {id: row.delivery_document})
 MERGE (o)-[:DELIVERED_BY]->(d)
 """
 
 _REL_DELIVERY_INVOICE = """
 UNWIND $rows AS row
-MATCH (d:Delivery {id: row.reference_sd_document})
-MATCH (i:Invoice {id: row.billing_document})
+MERGE (d:Delivery {id: row.reference_sd_document})
+MERGE (i:Invoice {id: row.billing_document})
 MERGE (d)-[:BILLED_BY]->(i)
 """
 

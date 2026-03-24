@@ -12,10 +12,21 @@ from __future__ import annotations
 
 from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+import re
 
 from app.core.dsl.enums import AggFunction, SortOrder
 from app.core.dsl.filters import Filter, SortSpec
+
+_DOC_ID_RE = re.compile(r"^\d{1,11}$")  # Allow up to 11 to handle over-padded inputs
+
+def normalize_doc_id(v: str) -> str:
+    """Standardize SAP document numbers to 10-digit zero-padded strings."""
+    val = v.strip()
+    # Strip existing leading zeros and re-pad to 10
+    if val and _DOC_ID_RE.match(val):
+        return val.lstrip('0').zfill(10)
+    return val
 
 
 # ── Concrete intent types ─────────────────────────────────────────────────────
@@ -30,6 +41,11 @@ class EntityLookupIntent(BaseModel):
     entity_type: str  # Semantic alias, e.g. "order"
     identifier: str   # Document number / PK value (already zero-padded)
     fields: list[str] | None = None  # None = return all fields
+
+    @field_validator("identifier", mode="before")
+    @classmethod
+    def _normalize_id(cls, v: Any) -> str:
+        return normalize_doc_id(str(v))
 
 
 class EntityListIntent(BaseModel):
@@ -73,6 +89,11 @@ class FlowTraceIntent(BaseModel):
     start_id: str            # Document number (zero-padded)
     target_entity: str | None = None  # None = return all reachable
     max_depth: int = Field(default=4, ge=1, le=6)
+
+    @field_validator("start_id", mode="before")
+    @classmethod
+    def _normalize_id(cls, v: Any) -> str:
+        return normalize_doc_id(str(v))
 
 
 class BrokenFlowIntent(BaseModel):
